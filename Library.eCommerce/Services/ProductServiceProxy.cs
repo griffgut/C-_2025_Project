@@ -1,4 +1,5 @@
-﻿using Spring2025_Samples.Models;
+﻿using Library.eCommerce.Models;
+using Spring2025_Samples.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,8 @@ namespace Library.eCommerce.Services
     {
         private ProductServiceProxy()
         {
-            Products = new List<Product?>();
+            Products = new List<Item?>();
+            new Item { Product = new Product{ Id = 1, Name = "Product 1" }, Id = 1, Quantity = 1, Price = 2 };
         }
 
         private int LastKey
@@ -45,35 +47,42 @@ namespace Library.eCommerce.Services
             }
         }
 
-        public List<Product?> Products { get; private set; }
+        public List<Item?> Products { get; private set; }
 
 
-        public Product AddOrUpdate(Product product)
+        public Item AddOrUpdate(Item item)
         {
-            if(product.Id == 0)
+            if(item.Id == 0)
             {
-                product.Id = LastKey + 1;
-                Products.Add(product);
+                item.Id = LastKey + 1;
+                item.Product.Id = item.Id;
+                Console.Write("What is the amount of this item: ");
+                item.Quantity = int.Parse(Console.ReadLine() ?? "-1");
+                Console.Write("What is the price of this item: ");
+                item.Price = double.Parse(Console.ReadLine() ?? "-1");
+                Products.Add(item);
             }
 
-
-            return product;
+            return item;
         }
 
-        public Product? Delete(int id)
+        public Item? Delete(int id)
         {
             if(id == 0)
             {
                 return null;
             }
 
-            Product? product = Products.FirstOrDefault(p => p.Id == id);
+            Item? product = Products.FirstOrDefault(p => p.Id == id);
             Products.Remove(product);
 
             return product;
         }
+        public Item? GetById(int id) 
+        {
+            return Products.FirstOrDefault(p => p.Id == id);
 
-    }
+        }
 
     
 }
