@@ -4,136 +4,105 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Library.eCommerce.Models;
 using Spring2025_Samples.Models;
 
 namespace Library.eCommerce.Services
 {
     public class ShoppingServiceProxy
     {
-        private List<Product?> items;
-        private ShoppingServiceProxy()
-        {
-            
-            Cart = new List<Product?>();
-        }
-        private int LastKey
-        {
-            get
-            {
-                if (!Cart.Any())
-                {
-                    return 0;
-                }
-
-                return Cart.Select(p => p?.Id ?? 0).Max();
-            }
-        }
-
-        private static ShoppingServiceProxy? instance;
-        private static object instanceLock = new object();
-        public static ShoppingServiceProxy Current
-        {
-            get
-            {
-                lock (instanceLock)
-                {
-                    if (instance == null)
-                    {
-                        instance = new ShoppingServiceProxy();
-                    }
-                }
-
-                return instance;
-            }
-        }
-        public List<Product?> CartItems
+        private List<Item?> items;
+        private ProductServiceProxy products = ProductServiceProxy.Current;
+        public List<Item?> CartItems
         {
             get
             {
                 return items;
             }
         }
-
-
-        public Product AddOrUpdate(Product product)
+        private ShoppingServiceProxy()
         {
-            int buy_num = 0;
-            int up_num = 0;
-
-            Product copy = new Product();
-            // need to check if product is in cart already before adding
-            if (product.Id == 0)   // ADD
+            items = new List<Item>();
+        }
+        /*
+        private int LastKey
+        {
+            get
             {
-                Console.Write("How much of this product do you want to buy? ");
-                buy_num = int.Parse(Console.ReadLine() ?? "-1");
-                if(product.Quantity >= buy_num)
+                if (!items.Any())
                 {
-                    copy.Quantity = buy_num;
-                    copy.Price = product.Price;
-                    copy.Id = LastKey + 1;
-                    copy.Name = product.Name;
-                    product.Quantity = product.Quantity - buy_num;
-                    if(product.Quantity == 0)
-                    {
-                        c_inv.Current.Delete(product.Id);
-                    }
-                    Cart.Add(copy);
+                    return 0;
                 }
-                else
-                {
-                    Console.WriteLine("There isn't enough of this item to buy for the specified amount");
-                }
+
+                return items.Select(p => p?.Id ?? 0).Max();
             }
-            else
+        }
+        */
+        private static ShoppingServiceProxy? instance;
+        public static ShoppingServiceProxy Current
+        {
+            get
             {
-                int diff;
-                copy = new Product();
-                Console.Write("How much of this item do you want to add? ");
-                up_num = int.Parse(Console.ReadLine() ?? "-1");
-                string? name = product.Name;
-                diff = product.Quantity - up_num;
-                foreach (var item in ProductServiceProxy.Current.Products)
+                if (instance == null)
                 {
-                    if (item.Name == product.Name)
-                    {
-                        if (item.Quantity >= up_num) // product here is a shopping cart object
-                        {
-                            if (item.Quantity != 0)
-                            {
-                                item.Quantity = item.Quantity + diff;
-                                copy = item;
-                                copy.Quantity = up_num;
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("There isn't enough of this item to buy for the specified amount");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("There is no product named " + product.Name + "in the inventory");
-                    }
+                        instance = new ShoppingServiceProxy();
                 }
 
+                return instance;
             }
-            return copy;
-
         }
 
-        public Product? Delete(int id)
+        public Item? AddOrUpdate(Item item)
         {
-            if (id == 0)
+            var existingInvItem = products.GetById(item.Product.Id);
+            if (existingInvItem == null || existingInvItem.Quantity == 0)
             {
                 return null;
             }
+            if (existingInvItem != null)    // subtract from inventory
+            {
+                existingInvItem.Quantity--;
 
-            Product? product = Cart.FirstOrDefault(p => p.Id == id);
-            Cart.Remove(product);
+            }
+            var existingItem = CartItems.FirstOrDefault(p => p.Product.Id == item.Product.Id);
+            if (existingItem == null)   // if item not in shopping cart/Add
+            {
+                var newItem = new Item(item);
+                newItem.Quantity = 1;
+                CartItems.Add(newItem);
+            }
+            else   // if item exists in cart/Update
+            {
+                existingItem.Quantity++;
+            }
+            return existingInvItem;
 
-            return product;
         }
 
+        public Item? Delete(Item? item)
+        {
+            if (item?.Product.Id <= 0 || item == null)
+            {
+                return null;
+            }
+            var itemReturn = CartItems.FirstOrDefault(p => p.Product.Id == item.Product.Id);
+            if (itemReturn != null)
+            {
+                //itemReturn.Quantity--;
+               
+                var invItem = products.Products.FirstOrDefault(p => p.Id == itemReturn.Product.Id);
+                if (invItem == null)
+                {
+                    products.AddOrUpdate(new Item(itemReturn));
+                }
+                else
+                {
+                    invItem.Quantity += itemReturn.Quantity;
+                }
+                CartItems.Remove(itemReturn); // delete return item because we return all items in of that id
+            }
+            return itemReturn;
+        }
     }
 
 }

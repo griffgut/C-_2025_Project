@@ -1,6 +1,6 @@
 ﻿//// See https://aka.ms/new-console-template for more information
 //Console.WriteLine("Hello, World!");
-
+using Library.eCommerce.Models;
 using Library.eCommerce.Services;
 using Spring2025_Samples.Models;
 using System;
@@ -38,14 +38,13 @@ namespace MyApp
                         break;
                     case 'Q':
                     case 'q':
-                        List<Product?> pCart = ShoppingServiceProxy.Current.Cart;
-                        if (pCart.Any())
+                        if (ShoppingServiceProxy.Current.CartItems.Any())
                         {
                             Console.WriteLine("Receipt");
-                            pCart.ForEach(Console.WriteLine);
+                            ShoppingServiceProxy.Current.CartItems.ForEach(Console.WriteLine);
                             double p = 0;
                             double q = 0;
-                            foreach(var item in pCart)
+                            foreach(var item in ShoppingServiceProxy.Current.CartItems)
                             {
                                 p = item.Price;
                                 q = item.Quantity;
@@ -77,8 +76,8 @@ namespace MyApp
             Console.WriteLine("D. Delete an inventory item");
             Console.WriteLine("Q. Quit");
 
-            List<Product?> list = ProductServiceProxy.Current.Products;
-
+            List<Item?> list = ProductServiceProxy.Current.Products;
+           
             char choice;
             do
             {
@@ -88,11 +87,14 @@ namespace MyApp
                 {
                     case 'C':
                     case 'c':
+                        Item i = new Item();
                         Console.WriteLine("What is the name of the product: ");
-                        ProductServiceProxy.Current.AddOrUpdate(new Product
-                        {
-                            Name = Console.ReadLine()
-                        });
+                        i.Product.Name = Console.ReadLine();
+                        Console.WriteLine("What is the price: ");
+                        i.Price = double.Parse(Console.ReadLine() ?? "0");
+                        Console.WriteLine("What is the quantity: ");
+                        i.Quantity = int.Parse(Console.ReadLine() ?? "0");
+                        ProductServiceProxy.Current.AddOrUpdate(i);
                         break;
                     case 'R':
                     case 'r':
@@ -102,13 +104,18 @@ namespace MyApp
                     case 'U':
                     case 'u':
                         //select one of the products
-                        Console.WriteLine("Which product would you like to update?");
+                        Console.WriteLine("Which product would you like to update? Please input the ID");
                         int selection = int.Parse(Console.ReadLine() ?? "-1");
                         var selectedProd = list.FirstOrDefault(p => p.Id == selection);
 
                         if (selectedProd != null)
                         {
-                            selectedProd.Name = Console.ReadLine() ?? "ERROR";
+                            Console.WriteLine("Please enter a new name: ");
+                            selectedProd.Product.Name = Console.ReadLine() ?? "ERROR";
+                            Console.WriteLine("Please enter a new price: ");
+                            selectedProd.Price = double.Parse(Console.ReadLine() ?? "0");
+                            Console.WriteLine("Please enter a new quantity: ");
+                            selectedProd.Quantity = int.Parse(Console.ReadLine() ?? "0");
                             ProductServiceProxy.Current.AddOrUpdate(selectedProd);
                         }
                         break;
@@ -116,7 +123,7 @@ namespace MyApp
                     case 'd':
                         //select one of the products
                         //throw it away
-                        Console.WriteLine("Which product would you like to update?");
+                        Console.WriteLine("Which product would you like to delete? Please enter the ID");
                         selection = int.Parse(Console.ReadLine() ?? "-1");
                         ProductServiceProxy.Current.Delete(selection);
                         break;
@@ -138,10 +145,10 @@ namespace MyApp
             Console.WriteLine("R. Read all shopping cart");
             Console.WriteLine("I. Read all inventory items");
             Console.WriteLine("U. Update amount of item in a cart");
-            Console.WriteLine("D. Remove an item from the shopping cart");
+            Console.WriteLine("D. Return an item from the shopping cart");
             Console.WriteLine("Q. Quit");
-            List<Product?> inv = ProductServiceProxy.Current.Products; // shallow copy of products
-            List<Product?> sCart = ShoppingServiceProxy.Current.Cart;   // shallow copy of cart
+            List<Item?> inv = ProductServiceProxy.Current.Products; // shallow copy of products
+            List<Item?> sCart = ShoppingServiceProxy.Current.CartItems;   // shallow copy of cart
             char choice;
             do
             {
@@ -171,12 +178,14 @@ namespace MyApp
                     case 'U':
                     case 'u':
                         //select one of the products
-                        Console.WriteLine("Which product would you like to update?");
+                        Console.WriteLine("Which product's quantity would you like to update? Please enter the ID");
                         int selection = int.Parse(Console.ReadLine() ?? "-1");
-                        var selectedProd = sCart.FirstOrDefault(p => p.Id == selection);
+                        var selectedProd = sCart.FirstOrDefault(p => p.Product.Id == selection);
 
                         if (selectedProd != null)
                         {
+                            //Console.WriteLine("What is the new quantity of this item: ");
+                            //int q = int.Parse(Console.ReadLine() ?? "0");
                             ShoppingServiceProxy.Current.AddOrUpdate(selectedProd);
                         }
                         break;
@@ -184,9 +193,11 @@ namespace MyApp
                     case 'd':
                         //select one of the products
                         //throw it away
-                        Console.WriteLine("Which product would you like to update?");
+                        Console.WriteLine("Which product would you like to return? Please enter the ID");
                         selection = int.Parse(Console.ReadLine() ?? "-1");
-                        ShoppingServiceProxy.Current.Delete(selection);
+                        var sProd = sCart.FirstOrDefault(p => p.Product.Id == selection);
+
+                        ShoppingServiceProxy.Current.Delete(sProd);
                         break;
                     case 'Q':
                     case 'q':

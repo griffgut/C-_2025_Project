@@ -9,24 +9,23 @@ namespace Spring2025_Samples.Models
     public class Product
     {
         public int Id { get; set; }
-
         public string? Name { get; set; }
-
-        public int Quantity {  get; set; }  // track the quantity of a product
-        public double Price {  get; set; }
         public string? Display
         {
             get
             {
-                return $"{Id}. {Name} Total: {Quantity} Price: ${Price}";
+                return $"{Id}. {Name}.";
             }
         }
 
         public Product()
         {
             Name = string.Empty;
-            Quantity = 0;
-            Price = 0;
+        }
+        public Product(Product product)
+        {
+            Name = product.Name;
+            Id = product.Id;
         }
 
         public override string ToString()
