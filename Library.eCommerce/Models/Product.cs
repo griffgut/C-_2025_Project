@@ -9,20 +9,23 @@ namespace Spring2025_Samples.Models
     public class Product
     {
         public int Id { get; set; }
-
         public string? Name { get; set; }
-
         public string? Display
         {
             get
             {
-                return $"{Id}. {Name}";
+                return $"{Id}. {Name}.";
             }
         }
 
         public Product()
         {
             Name = string.Empty;
+        }
+        public Product(Product product)
+        {
+            Name = product.Name;
+            Id = product.Id;
         }
 
         public override string ToString()
