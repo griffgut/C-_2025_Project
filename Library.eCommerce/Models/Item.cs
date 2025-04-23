@@ -12,8 +12,8 @@ namespace Library.eCommerce.Models
     {
         public int Id { get; set; }
         public Product Product { get; set; }
-        public int Quantity {  get; set; }
-        public double Price { get; set; }
+        public int? Quantity {  get; set; }
+        public double? Price { get; set; }
         public override string ToString()
         {
             return $"{Product} Price: ${Price} Quantity: {Quantity}";
@@ -22,7 +22,7 @@ namespace Library.eCommerce.Models
         {
             get
             {
-                return Product?.Display ?? string.Empty;
+                return $"{Product?.Display ?? string.Empty} Price: ${Price} Quantity: {Quantity}";
             }
         }
         public Item() 
@@ -37,7 +37,8 @@ namespace Library.eCommerce.Models
         }
         public Item(Item i)
         {
-            Product = i.Product;
+            Product = new Product(i.Product);
+            Id = i.Id;
             Quantity = i.Quantity;
             Price = i.Price;
         }

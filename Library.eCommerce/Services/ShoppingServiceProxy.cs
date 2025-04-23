@@ -22,7 +22,7 @@ namespace Library.eCommerce.Services
         }
         private ShoppingServiceProxy()
         {
-            items = new List<Item>();
+            items = new List<Item?>();
         }
         /*
         private int LastKey
@@ -76,9 +76,9 @@ namespace Library.eCommerce.Services
                 existingItem.Quantity++;
             }
             return existingInvItem;
-
         }
-
+        // Return for assignment one
+        // Returns all items at once
         public Item? Delete(Item? item)
         {
             if (item?.Product.Id <= 0 || item == null)
@@ -99,9 +99,34 @@ namespace Library.eCommerce.Services
                 {
                     invItem.Quantity += itemReturn.Quantity;
                 }
+
                 CartItems.Remove(itemReturn); // delete return item because we return all items in of that id
             }
             return itemReturn;
+        }
+        // Assignment 2 return returns one item at a time
+        public Item? ReturnItem(Item? item)
+        {
+            if (item?.Id <= 0 || item == null)
+            {
+                return null;
+            }
+            var itemToReturn = CartItems.FirstOrDefault(c => c.Id == item.Id);
+            if (itemToReturn != null)
+            {
+                itemToReturn.Quantity--;
+                var invItem = products.Products.FirstOrDefault(p=>p.Id == itemToReturn.Id);
+                if (invItem == null) 
+                {
+                    products.AddOrUpdate(new Item(itemToReturn));
+                }
+                else
+                {
+                    invItem.Quantity++;
+                }
+            }
+
+            return itemToReturn;
         }
     }
 

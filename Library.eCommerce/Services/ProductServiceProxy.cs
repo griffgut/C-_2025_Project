@@ -12,8 +12,10 @@ namespace Library.eCommerce.Services
     {
         private ProductServiceProxy()
         {
-            Products = new List<Item?>();
-            new Item { Product = new Product { Id = 1, Name = "Product 1" }, Id = 1, Quantity = 1, Price = 2 };
+            Products = new List<Item?>() {
+            new Item { Product = new Product { Id = 1, Name = "Product 1" }, Id = 1, Quantity = 1, Price = 2 },
+            new Item {Product = new Product{Id = 2, Name = "Product 2"}, Id = 2, Quantity = 25, Price = 3 },
+            };
         }
 
         private int LastKey
@@ -61,9 +63,11 @@ namespace Library.eCommerce.Services
             else
             {
                 var existingItem = Products.FirstOrDefault(p => p.Id == item.Id);
+                //Products.Add(new Item(item));
+                //existingItem = new Item(item);
                 var idx = Products.IndexOf(existingItem);
                 Products.RemoveAt(idx);
-                Products.Insert(idx, item);
+                Products.Insert(idx, new Item(item));
             }
 
             return item;
@@ -85,7 +89,20 @@ namespace Library.eCommerce.Services
         {
             return Products.FirstOrDefault(p => p.Id == id);
         }
+        public Item? PurchaseItem(Item? item)
+        {
+            if(item?.Id <= 0 || item == null)
+            {
+                return null;
+            }
+            var itemToPurchase = GetById(item.Id);
+            if(itemToPurchase != null)
+            {
+                itemToPurchase.Quantity--;
+            }
 
+            return itemToPurchase;
+        }
     }
 
     
