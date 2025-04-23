@@ -16,7 +16,7 @@ namespace MyApp
             Console.WriteLine("Welcome to Amazon!");
 
             char choice;
-            double total = 0;
+            double? total = 0;
 
             do
             {
@@ -42,8 +42,8 @@ namespace MyApp
                         {
                             Console.WriteLine("Receipt");
                             ShoppingServiceProxy.Current.CartItems.ForEach(Console.WriteLine);
-                            double p = 0;
-                            double q = 0;
+                            double? p = 0;
+                            double? q = 0;
                             foreach(var item in ShoppingServiceProxy.Current.CartItems)
                             {
                                 p = item.Price;

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Maui.eCommerce.Views.ShoppingManagementView"
+             Title="ShoppingManagementView"
+             NavigatedTo="ContentPage_NavigatedTo">
+    <Grid RowDefinitions="*,Auto">
+        <!--Grid Rows for all data as row 0 and the back button as row 1-->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <!--Inventory View-->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ListView Grid.Row="0"
+                      ItemsSource="{Binding Inventory}"
+                      SelectedItem="{Binding SelectedItem}"
+                      >
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="5*"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0" Text="{Binding Id}"/>
+                                    <Label Grid.Column="1" Text="{Binding Product.Name}"/>
+                                    <Label Grid.Column="2" Text="{Binding Price, StringFormat='${0:F2}'}"/>
+                                    <Label Grid.Column="3" Text="x"/>
+                                    <Label Grid.Column="4" Text="{Binding Quantity}"/>
+                                    <Button Grid.Column="5" Text="+"/>
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <Button Grid.Row="1" Text="+" Clicked="AddtoCartClicked"/>
+            </Grid>
+            <!--User Cart-->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ListView Grid.Row="0"
+                    ItemsSource="{Binding Cart}"
+                    SelectedItem ="{Binding SelectedCartItem}"
+                    >
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="5*"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0" Text="{Binding Id}"/>
+                                    <Label Grid.Column="1" Text="{Binding Product.Name}"/>
+                                    <Label Grid.Column="2" Text="{Binding Price, StringFormat='${0:F2}'}"/>
+                                    <Label Grid.Column="3" Text="x"/>
+                                    <Label Grid.Column="4" Text="{Binding Quantity}"/>
+                                    <Button Grid.Column="5" Text="-"/>
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <Button Grid.Row="1" Text="-" Clicked="RemoveCartClicked"/>
+            </Grid>
+            
+        </Grid>
+        <Button Grid.Row="1"
+            Text="Go Back"
+            Clicked="CancelClicked"
+            />
+    </Grid>
+</ContentPage>

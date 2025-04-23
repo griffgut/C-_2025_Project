@@ -12,7 +12,11 @@
             Text="Inventory Management"
                 Clicked="InventoryClicked"/>
             <Button
-            Text="Shop"/>
+            Text="Shop"
+                Clicked="ShopClicked"/>
+            <Button Text="Checkout"
+                    Clicked="CheckoutClicked"/>
+            <Label x:Name="ResultLabel" FontSize="18"/>
         </VerticalStackLayout>
     </ScrollView>
 
